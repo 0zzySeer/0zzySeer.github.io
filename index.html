@@ -355,13 +355,35 @@ const rsvpSuccess=document.getElementById("rsvpSuccess");
 const rsvpStage=document.getElementById("rsvpStage");
 let rsvpSending=false;
 
+function makeRsvpId(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "rsvp-"+Date.now()+"-"+Math.random().toString(36).slice(2);
+}
+
+function getPendingId(signature){
+  try{
+    const saved=JSON.parse(localStorage.getItem("rsvp_pending")||"null");
+    if(saved && saved.signature===signature && saved.id) return saved.id;
+  }catch(e){}
+  const id=makeRsvpId();
+  try{localStorage.setItem("rsvp_pending",JSON.stringify({id,signature}));}catch(e){}
+  return id;
+}
+
+function clearPendingId(){
+  try{localStorage.removeItem("rsvp_pending");}catch(e){}
+}
+
 function rsvpCallback(result){
   if(!rsvpSending) return;
   rsvpSending=false;
+
   if(result && result.ok){
+    clearPendingId();
     rsvpForm.reset();
     rsvpStage.classList.add("sent");
-  } else {
+    rsvpStatus.textContent="";
+  }else{
     rsvpSubmit.disabled=false;
     rsvpSubmit.textContent="Confirmar presença";
     rsvpStatus.className="error";
@@ -371,7 +393,7 @@ function rsvpCallback(result){
 
 window.rsvpCallback=rsvpCallback;
 
-rsvpForm.addEventListener("submit", function(e){
+rsvpForm.addEventListener("submit",function(e){
   e.preventDefault();
   if(rsvpSending) return;
 
@@ -379,8 +401,10 @@ rsvpForm.addEventListener("submit", function(e){
   const nome=(data.get("nome")||"").trim();
   const presenca=data.get("presenca")||"";
   const mensagem=(data.get("mensagem")||"").trim();
-
   if(!nome || !presenca) return;
+
+  const signature=[nome,presenca,mensagem].join("|");
+  const requestId=getPendingId(signature);
 
   rsvpSending=true;
   rsvpSubmit.disabled=true;
@@ -390,6 +414,7 @@ rsvpForm.addEventListener("submit", function(e){
 
   const params=new URLSearchParams({
     callback:"rsvpCallback",
+    request_id:requestId,
     nome:nome,
     presenca:presenca,
     mensagem:mensagem,
@@ -402,27 +427,29 @@ rsvpForm.addEventListener("submit", function(e){
 
   const script=document.createElement("script");
   script.id="rsvpJsonp";
-  script.src=RSVP_ENDPOINT+"?"+params.toString();
+  script.src=RSVP_ENDPOINT+"?"+params.toString()+"&_="+Date.now();
+
   script.onerror=function(){
     rsvpSending=false;
     rsvpSubmit.disabled=false;
-    rsvpSubmit.textContent="Confirmar presença";
+    rsvpSubmit.textContent="Tentar novamente";
     rsvpStatus.className="error";
-    rsvpStatus.textContent="Não foi possível conectar ao servidor. Tente novamente.";
+    rsvpStatus.textContent="Não foi possível conectar. Você pode tentar novamente sem risco de duplicar.";
     script.remove();
   };
+
   document.body.appendChild(script);
 
   setTimeout(function(){
     if(rsvpSending){
       rsvpSending=false;
       rsvpSubmit.disabled=false;
-      rsvpSubmit.textContent="Confirmar presença";
+      rsvpSubmit.textContent="Tentar novamente";
       rsvpStatus.className="error";
-      rsvpStatus.textContent="O envio demorou mais que o esperado. Tente novamente.";
+      rsvpStatus.textContent="A confirmação ainda não respondeu. Tente novamente sem risco de duplicar.";
       script.remove();
     }
-  },15000);
+  },30000);
 });
 </script>
 
