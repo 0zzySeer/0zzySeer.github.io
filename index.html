@@ -159,22 +159,21 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
 @media (max-width:600px){
   .story-dots{bottom:12px}
 }
-</style>
 
-<style id="rsvp-success-style">
-.rsvp-success-overlay{display:none;text-align:center;padding:26px 18px 8px;animation:rsvpFade .55s ease both}
-.rsvp-success-overlay.show{display:block}
-.rsvp-success-check{width:70px;height:70px;margin:0 auto 16px;border:1.5px solid #b99867;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;animation:rsvpPop .55s cubic-bezier(.2,.8,.2,1) both}
-.rsvp-success-check:after{content:"";width:27px;height:14px;border-left:2px solid #b99867;border-bottom:2px solid #b99867;transform:rotate(-45deg) translate(2px,-2px);animation:rsvpCheck .45s .22s ease both}
-.rsvp-success-check:before{content:"";position:absolute;inset:-8px;border:1px solid rgba(185,152,103,.22);border-radius:50%;animation:rsvpRing 1.15s ease-out both}
-.rsvp-success-title{margin:0 0 7px;font:500 28px/1.2 "Cormorant Garamond",serif;color:#49372a}
-.rsvp-success-text{margin:0 auto;max-width:440px;font-size:13px;line-height:1.7;color:#786452}
-.rsvp-success-sparkle{margin-top:13px;color:#b99867;letter-spacing:7px;font-size:12px}
-@keyframes rsvpFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* RSVP — confirmação enviada */
+.rsvp-success{display:none;text-align:center;padding:28px 12px 8px;animation:rsvpIn .55s ease both}
+.rsvp-success.show{display:block}
+.rsvp-check{width:72px;height:72px;border:1px solid #a88b5e;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;position:relative;animation:rsvpPop .55s cubic-bezier(.2,.8,.2,1) both}
+.rsvp-check:after{content:"";width:28px;height:15px;border-left:2px solid #a88b5e;border-bottom:2px solid #a88b5e;transform:rotate(-45deg) translate(2px,-2px);animation:rsvpTick .45s .2s ease both}
+.rsvp-check:before{content:"";position:absolute;inset:-8px;border:1px solid rgba(168,139,94,.2);border-radius:50%;animation:rsvpRing 1.2s ease-out both}
+.rsvp-success h3{margin:0 0 7px;font:500 28px/1.2 "Cormorant Garamond",serif;color:#49372a}
+.rsvp-success p{margin:0 auto;max-width:430px;font-size:13px;line-height:1.7;color:#756758}
+.rsvp-sparkle{margin-top:13px;color:#a88b5e;letter-spacing:7px;font-size:11px}
+@keyframes rsvpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes rsvpPop{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
-@keyframes rsvpCheck{from{opacity:0;transform:rotate(-45deg) scale(.5)}to{opacity:1;transform:rotate(-45deg) scale(1)}}
+@keyframes rsvpTick{from{opacity:0;transform:rotate(-45deg) scale(.5)}to{opacity:1;transform:rotate(-45deg) scale(1)}}
 @keyframes rsvpRing{0%{opacity:0;transform:scale(.7)}35%{opacity:1}100%{opacity:0;transform:scale(1.25)}}
-.rsvp-sending #rsvpSubmit{opacity:.65;cursor:wait}
+.rsvp .form button:disabled{opacity:.65;cursor:wait}
 </style>
 </head>
 <body>
@@ -292,7 +291,7 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
 <div class="rule" style="justify-content:center;color:#a88b5e">♡</div>
 <p class="sub">Será uma alegria imensa ter você conosco nesse momento tão especial.</p>
 <iframe name="rsvpFrame" id="rsvpFrame" title="Envio da confirmação" style="display:none"></iframe>
-<form class="form" id="rsvpForm" action="https://script.google.com/macros/s/AKfycbxdAfT0nhZ6wNABiOn4XaBL1GI5N2UuXozAgLAzh9eaAJQqOf3AaM5FxDhDPYwrLF5XIw/exec" method="POST" target="rsvpFrame">
+<form class="form" id="rsvpForm">
   <input type="text" name="nome" placeholder="Seu nome" autocomplete="name" required>
   <select name="presenca" required>
     <option value="" disabled selected>Você estará conosco?</option>
@@ -300,18 +299,15 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
     <option value="Não poderei comparecer">Não poderei comparecer</option>
   </select>
   <textarea name="mensagem" placeholder="Deixe uma mensagem para os noivos (opcional)"></textarea>
-  <input type="hidden" name="origem" value="site de casamento">
-  <input type="hidden" name="data_evento" value="14 de novembro de 2026">
   <button type="submit" id="rsvpSubmit">Confirmar presença</button>
   <div id="rsvpStatus" role="status" aria-live="polite"></div>
 </form>
-<div class="rsvp-success-overlay" id="rsvpSuccess" aria-live="polite">
-  <div class="rsvp-success-check" aria-hidden="true"></div>
-  <h3 class="rsvp-success-title">Confirmação enviada!</h3>
-  <p class="rsvp-success-text">Obrigado por confirmar. Será uma alegria ter você conosco!</p>
-  <div class="rsvp-success-sparkle" aria-hidden="true">✦　♡　✦</div>
+<div class="rsvp-success" id="rsvpSuccess" aria-live="polite">
+  <div class="rsvp-check" aria-hidden="true"></div>
+  <h3>Confirmação enviada!</h3>
+  <p>Obrigado por confirmar. Será uma alegria ter você conosco!</p>
+  <div class="rsvp-sparkle">✦　♡　✦</div>
 </div>
-
 <p class="rsvp-note">Sua confirmação será enviada diretamente para a planilha configurada pelos noivos, sem exibir o Google Forms.</p>
 </div>
 </section>
@@ -328,40 +324,89 @@ const PIX_KEY="f92c1323-8af9-4a82-81ca-bfe412d67e8d";
  * Cole aqui a URL pública do Google Apps Script Web App que grava as respostas
  * na sua planilha. O código do Apps Script está no arquivo google-apps-script.gs.
  */
-const RSVP_ENDPOINT="https://script.google.com/macros/s/AKfycbxdAfT0nhZ6wNABiOn4XaBL1GI5N2UuXozAgLAzh9eaAJQqOf3AaM5FxDhDPYwrLF5XIw/exec";
+const RSVP_ENDPOINT="https://script.google.com/macros/s/AKfycbzaa1-BxklZMvdZ4BB66jwYKe6uRHCQyX6fpZWdpJE-dMR_n46xSLzaiH7LIBHwbnGb/exec";
 
 function openPix(n,v){giftName.textContent=n;giftValue.textContent="Valor: "+v;pixModal.classList.add("open")}
 function closePix(){pixModal.classList.remove("open")}
 async function copyPix(){try{await navigator.clipboard.writeText(PIX_KEY);alert("Chave PIX copiada!")}catch(e){alert("Copie a chave PIX manualmente.")}}
 window.addEventListener("click",e=>{if(e.target===pixModal)closePix()})
 
+
+const RSVP_ENDPOINT="https://script.google.com/macros/s/AKfycbzaa1-BxklZMvdZ4BB66jwYKe6uRHCQyX6fpZWdpJE-dMR_n46xSLzaiH7LIBHwbnGb/exec";
 const rsvpForm=document.getElementById("rsvpForm");
 const rsvpSubmit=document.getElementById("rsvpSubmit");
 const rsvpStatus=document.getElementById("rsvpStatus");
-const rsvpFrame=document.getElementById("rsvpFrame");
 const rsvpSuccess=document.getElementById("rsvpSuccess");
 let rsvpSending=false;
-let rsvpHasSubmitted=false;
 
-rsvpForm.addEventListener("submit",()=>{
+function rsvpCallback(result){
+  if(!rsvpSending) return;
+  rsvpSending=false;
+  if(result && result.ok){
+    rsvpForm.style.display="none";
+    rsvpSuccess.classList.add("show");
+  } else {
+    rsvpSubmit.disabled=false;
+    rsvpSubmit.textContent="Confirmar presença";
+    rsvpStatus.className="error";
+    rsvpStatus.textContent="Não foi possível registrar sua confirmação. Tente novamente.";
+  }
+}
+
+window.rsvpCallback=rsvpCallback;
+
+rsvpForm.addEventListener("submit", function(e){
+  e.preventDefault();
   if(rsvpSending) return;
+
+  const data=new FormData(rsvpForm);
+  const nome=(data.get("nome")||"").trim();
+  const presenca=data.get("presenca")||"";
+  const mensagem=(data.get("mensagem")||"").trim();
+
+  if(!nome || !presenca) return;
+
   rsvpSending=true;
-  rsvpHasSubmitted=true;
-  document.body.classList.add("rsvp-sending");
-  rsvpStatus.textContent="Enviando…";
   rsvpSubmit.disabled=true;
   rsvpSubmit.textContent="Enviando…";
-});
-
-rsvpFrame.addEventListener("load",()=>{
-  if(!rsvpHasSubmitted) return;
-  rsvpHasSubmitted=false;
-  rsvpSending=false;
-
-  // The iframe load is the response from the deployed Apps Script.
-  rsvpForm.style.display="none";
-  rsvpSuccess.classList.add("show");
+  rsvpStatus.className="";
   rsvpStatus.textContent="";
+
+  const params=new URLSearchParams({
+    callback:"rsvpCallback",
+    nome:nome,
+    presenca:presenca,
+    mensagem:mensagem,
+    origem:"site de casamento",
+    data_evento:"14 de novembro de 2026"
+  });
+
+  const old=document.getElementById("rsvpJsonp");
+  if(old) old.remove();
+
+  const script=document.createElement("script");
+  script.id="rsvpJsonp";
+  script.src=RSVP_ENDPOINT+"?"+params.toString();
+  script.onerror=function(){
+    rsvpSending=false;
+    rsvpSubmit.disabled=false;
+    rsvpSubmit.textContent="Confirmar presença";
+    rsvpStatus.className="error";
+    rsvpStatus.textContent="Não foi possível conectar ao servidor. Tente novamente.";
+    script.remove();
+  };
+  document.body.appendChild(script);
+
+  setTimeout(function(){
+    if(rsvpSending){
+      rsvpSending=false;
+      rsvpSubmit.disabled=false;
+      rsvpSubmit.textContent="Confirmar presença";
+      rsvpStatus.className="error";
+      rsvpStatus.textContent="O envio demorou mais que o esperado. Tente novamente.";
+      script.remove();
+    }
+  },15000);
 });
 </script>
 
