@@ -174,6 +174,18 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
 @keyframes rsvpTick{from{opacity:0;transform:rotate(-45deg) scale(.5)}to{opacity:1;transform:rotate(-45deg) scale(1)}}
 @keyframes rsvpRing{0%{opacity:0;transform:scale(.7)}35%{opacity:1}100%{opacity:0;transform:scale(1.25)}}
 .rsvp .form button:disabled{opacity:.65;cursor:wait}
+
+/* RSVP estável no celular e desktop: sem pular para o topo */
+.rsvp-stage{position:relative;max-width:620px;margin:40px auto 0;min-height:330px}
+.rsvp-stage .form{margin:0;transition:opacity .35s ease,transform .35s ease}
+.rsvp-stage.sent .form{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.985)}
+.rsvp-stage .rsvp-success{
+  display:flex;position:absolute;inset:0;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;padding:22px;opacity:0;visibility:hidden;
+  transform:translateY(10px);transition:opacity .45s ease,transform .45s ease,visibility .45s
+}
+.rsvp-stage.sent .rsvp-success{opacity:1;visibility:visible;transform:none}
+@media(max-width:800px){.rsvp-stage{min-height:360px}}
 </style>
 </head>
 <body>
@@ -291,7 +303,8 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
 <div class="rule" style="justify-content:center;color:#a88b5e">♡</div>
 <p class="sub">Será uma alegria imensa ter você conosco nesse momento tão especial.</p>
 <iframe name="rsvpFrame" id="rsvpFrame" title="Envio da confirmação" style="display:none"></iframe>
-<form class="form" id="rsvpForm">
+<div class="rsvp-stage" id="rsvpStage">
+<form class="form" id="rsvpForm" action="javascript:void(0)">
   <input type="text" name="nome" placeholder="Seu nome" autocomplete="name" required>
   <select name="presenca" required>
     <option value="" disabled selected>Você estará conosco?</option>
@@ -308,6 +321,7 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
   <p>Obrigado por confirmar. Será uma alegria ter você conosco!</p>
   <div class="rsvp-sparkle">✦　♡　✦</div>
 </div>
+</div>
 <p class="rsvp-note">Sua confirmação será enviada diretamente para a planilha configurada pelos noivos, sem exibir o Google Forms.</p>
 </div>
 </section>
@@ -318,13 +332,14 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
 
 <script>
 const PIX_KEY="f92c1323-8af9-4a82-81ca-bfe412d67e8d";
+const RSVP_ENDPOINT="https://script.google.com/macros/s/AKfycbwMjiauwSoA1CNEQO8pzSJTwhCz5xydnfC7c37RD4vAtRpsU5BcHeCLz7OF_FZTiZKz5g/exec";
 
 /*
  * RSVP:
  * Cole aqui a URL pública do Google Apps Script Web App que grava as respostas
  * na sua planilha. O código do Apps Script está no arquivo google-apps-script.gs.
  */
-const RSVP_ENDPOINT="https://script.google.com/macros/s/AKfycbzaa1-BxklZMvdZ4BB66jwYKe6uRHCQyX6fpZWdpJE-dMR_n46xSLzaiH7LIBHwbnGb/exec";
+
 
 function openPix(n,v){giftName.textContent=n;giftValue.textContent="Valor: "+v;pixModal.classList.add("open")}
 function closePix(){pixModal.classList.remove("open")}
@@ -332,19 +347,20 @@ async function copyPix(){try{await navigator.clipboard.writeText(PIX_KEY);alert(
 window.addEventListener("click",e=>{if(e.target===pixModal)closePix()})
 
 
-const RSVP_ENDPOINT="https://script.google.com/macros/s/AKfycbzaa1-BxklZMvdZ4BB66jwYKe6uRHCQyX6fpZWdpJE-dMR_n46xSLzaiH7LIBHwbnGb/exec";
+
 const rsvpForm=document.getElementById("rsvpForm");
 const rsvpSubmit=document.getElementById("rsvpSubmit");
 const rsvpStatus=document.getElementById("rsvpStatus");
 const rsvpSuccess=document.getElementById("rsvpSuccess");
+const rsvpStage=document.getElementById("rsvpStage");
 let rsvpSending=false;
 
 function rsvpCallback(result){
   if(!rsvpSending) return;
   rsvpSending=false;
   if(result && result.ok){
-    rsvpForm.style.display="none";
-    rsvpSuccess.classList.add("show");
+    rsvpForm.reset();
+    rsvpStage.classList.add("sent");
   } else {
     rsvpSubmit.disabled=false;
     rsvpSubmit.textContent="Confirmar presença";
