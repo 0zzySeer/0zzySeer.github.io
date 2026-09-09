@@ -146,6 +146,19 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
   .verse-section blockquote{font-size:24px;line-height:1.55}
   .verse-reference{font-size:13px;letter-spacing:3px}
 }
+
+
+/* Carrossel de fotos — Nossa história */
+.story-carousel{position:relative;width:100%;overflow:hidden;border-radius:inherit}
+.story-slides{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden}
+.story-slide{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:cover;opacity:0;transition:opacity 900ms ease;display:block!important}
+.story-slide.active{opacity:1}
+.story-dots{position:absolute;left:0;right:0;bottom:16px;display:flex;justify-content:center;gap:7px;z-index:3}
+.story-dot{width:7px;height:7px;padding:0;border:1px solid rgba(255,255,255,.8);border-radius:50%;background:rgba(255,255,255,.35);box-shadow:0 1px 4px rgba(0,0,0,.25);pointer-events:none}
+.story-dot.active{background:#b9965d}
+@media (max-width:600px){
+  .story-dots{bottom:12px}
+}
 </style>
 </head>
 <body>
@@ -182,7 +195,18 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
 <div class="container story-grid story-with-photo">
 <div class="story-photo-wrap">
   <div class="story-photo-frame">
-    <img class="story-photo" src="assets/foto-nossa-historia.jpeg" alt="Osiel e Danielle juntos" loading="lazy">
+    <div class="story-carousel" aria-label="Fotos da nossa história">
+  <div class="story-slides">
+    <img class="story-photo story-slide active" src="assets/foto-nossa-historia.jpeg" alt="Osiel e Danielle juntos" loading="lazy">
+    <img class="story-photo story-slide" src="assets/foto-nossa-historia-2.jpeg" alt="As mãos de Osiel e Danielle com as alianças" loading="lazy">
+    <img class="story-photo story-slide" src="assets/foto-nossa-historia-3.jpeg" alt="Osiel e Danielle juntos ao ar livre" loading="lazy">
+  </div>
+  <div class="story-dots" aria-hidden="true">
+    <button class="story-dot active" type="button" tabindex="-1"></button>
+    <button class="story-dot" type="button" tabindex="-1"></button>
+    <button class="story-dot" type="button" tabindex="-1"></button>
+  </div>
+</div>
   </div>
 </div>
 <div class="story-copy"><div class="eyebrow">Nossa história</div><h3>O começo de uma nova fase</h3><p>Um amor construído com carinho, companheirismo e muitos sonhos. Agora, Osiel & Danielle se preparam para celebrar esse novo capítulo ao lado das pessoas que fazem parte da nossa história.</p><p>Queremos guardar este dia para sempre e compartilhar cada momento com quem amamos.</p><div class="rule" style="color:#a88b5e">♡</div></div>
@@ -324,6 +348,24 @@ rsvpForm.addEventListener("submit", async (event)=>{
     rsvpSubmit.textContent="Confirmar presença";
   }
 });
+</script>
+
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.story-slide');
+  const dots = document.querySelectorAll('.story-dot');
+  if (!slides.length) return;
+  let current = 0;
+  function showStorySlide(next){
+    slides[current].classList.remove('active');
+    if (dots[current]) dots[current].classList.remove('active');
+    current = next % slides.length;
+    slides[current].classList.add('active');
+    if (dots[current]) dots[current].classList.add('active');
+  }
+  setInterval(function(){ showStorySlide(current + 1); }, 4500);
+})();
 </script>
 </body>
 </html>
