@@ -160,6 +160,22 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
   .story-dots{bottom:12px}
 }
 </style>
+
+<style id="rsvp-success-style">
+.rsvp-success-overlay{display:none;text-align:center;padding:26px 18px 8px;animation:rsvpFade .55s ease both}
+.rsvp-success-overlay.show{display:block}
+.rsvp-success-check{width:70px;height:70px;margin:0 auto 16px;border:1.5px solid #b99867;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;animation:rsvpPop .55s cubic-bezier(.2,.8,.2,1) both}
+.rsvp-success-check:after{content:"";width:27px;height:14px;border-left:2px solid #b99867;border-bottom:2px solid #b99867;transform:rotate(-45deg) translate(2px,-2px);animation:rsvpCheck .45s .22s ease both}
+.rsvp-success-check:before{content:"";position:absolute;inset:-8px;border:1px solid rgba(185,152,103,.22);border-radius:50%;animation:rsvpRing 1.15s ease-out both}
+.rsvp-success-title{margin:0 0 7px;font:500 28px/1.2 "Cormorant Garamond",serif;color:#49372a}
+.rsvp-success-text{margin:0 auto;max-width:440px;font-size:13px;line-height:1.7;color:#786452}
+.rsvp-success-sparkle{margin-top:13px;color:#b99867;letter-spacing:7px;font-size:12px}
+@keyframes rsvpFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rsvpPop{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+@keyframes rsvpCheck{from{opacity:0;transform:rotate(-45deg) scale(.5)}to{opacity:1;transform:rotate(-45deg) scale(1)}}
+@keyframes rsvpRing{0%{opacity:0;transform:scale(.7)}35%{opacity:1}100%{opacity:0;transform:scale(1.25)}}
+.rsvp-sending #rsvpSubmit{opacity:.65;cursor:wait}
+</style>
 </head>
 <body>
 
@@ -289,6 +305,13 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
   <button type="submit" id="rsvpSubmit">Confirmar presença</button>
   <div id="rsvpStatus" role="status" aria-live="polite"></div>
 </form>
+<div class="rsvp-success-overlay" id="rsvpSuccess" aria-live="polite">
+  <div class="rsvp-success-check" aria-hidden="true"></div>
+  <h3 class="rsvp-success-title">Confirmação enviada!</h3>
+  <p class="rsvp-success-text">Obrigado por confirmar. Será uma alegria ter você conosco!</p>
+  <div class="rsvp-success-sparkle" aria-hidden="true">✦　♡　✦</div>
+</div>
+
 <p class="rsvp-note">Sua confirmação será enviada diretamente para a planilha configurada pelos noivos, sem exibir o Google Forms.</p>
 </div>
 </section>
@@ -316,25 +339,29 @@ const rsvpForm=document.getElementById("rsvpForm");
 const rsvpSubmit=document.getElementById("rsvpSubmit");
 const rsvpStatus=document.getElementById("rsvpStatus");
 const rsvpFrame=document.getElementById("rsvpFrame");
+const rsvpSuccess=document.getElementById("rsvpSuccess");
 let rsvpSending=false;
+let rsvpHasSubmitted=false;
 
 rsvpForm.addEventListener("submit",()=>{
   if(rsvpSending) return;
   rsvpSending=true;
-  rsvpStatus.className="";
+  rsvpHasSubmitted=true;
+  document.body.classList.add("rsvp-sending");
   rsvpStatus.textContent="Enviando…";
   rsvpSubmit.disabled=true;
   rsvpSubmit.textContent="Enviando…";
 });
 
 rsvpFrame.addEventListener("load",()=>{
-  if(!rsvpSending) return;
+  if(!rsvpHasSubmitted) return;
+  rsvpHasSubmitted=false;
   rsvpSending=false;
-  rsvpForm.reset();
-  rsvpStatus.className="ok";
-  rsvpStatus.textContent="Presença enviada com sucesso. Muito obrigado! ♡";
-  rsvpSubmit.disabled=false;
-  rsvpSubmit.textContent="Confirmar presença";
+
+  // The iframe load is the response from the deployed Apps Script.
+  rsvpForm.style.display="none";
+  rsvpSuccess.classList.add("show");
+  rsvpStatus.textContent="";
 });
 </script>
 
