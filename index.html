@@ -275,7 +275,8 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
 <div class="eyebrow">Esperamos você</div><h2 class="section-title script">Confirme sua presença</h2>
 <div class="rule" style="justify-content:center;color:#a88b5e">♡</div>
 <p class="sub">Será uma alegria imensa ter você conosco nesse momento tão especial.</p>
-<form class="form" id="rsvpForm">
+<iframe name="rsvpFrame" id="rsvpFrame" title="Envio da confirmação" style="display:none"></iframe>
+<form class="form" id="rsvpForm" action="https://script.google.com/macros/s/AKfycbxdAfT0nhZ6wNABiOn4XaBL1GI5N2UuXozAgLAzh9eaAJQqOf3AaM5FxDhDPYwrLF5XIw/exec" method="POST" target="rsvpFrame">
   <input type="text" name="nome" placeholder="Seu nome" autocomplete="name" required>
   <select name="presenca" required>
     <option value="" disabled selected>Você estará conosco?</option>
@@ -283,6 +284,8 @@ footer{padding:70px 25px;text-align:center;background:#140c08;color:#d9cbb8}.foo
     <option value="Não poderei comparecer">Não poderei comparecer</option>
   </select>
   <textarea name="mensagem" placeholder="Deixe uma mensagem para os noivos (opcional)"></textarea>
+  <input type="hidden" name="origem" value="site de casamento">
+  <input type="hidden" name="data_evento" value="14 de novembro de 2026">
   <button type="submit" id="rsvpSubmit">Confirmar presença</button>
   <div id="rsvpStatus" role="status" aria-live="polite"></div>
 </form>
@@ -312,45 +315,26 @@ window.addEventListener("click",e=>{if(e.target===pixModal)closePix()})
 const rsvpForm=document.getElementById("rsvpForm");
 const rsvpSubmit=document.getElementById("rsvpSubmit");
 const rsvpStatus=document.getElementById("rsvpStatus");
+const rsvpFrame=document.getElementById("rsvpFrame");
+let rsvpSending=false;
 
-rsvpForm.addEventListener("submit", async (event)=>{
-  event.preventDefault();
+rsvpForm.addEventListener("submit",()=>{
+  if(rsvpSending) return;
+  rsvpSending=true;
   rsvpStatus.className="";
-  rsvpStatus.textContent="";
-
-  if(!RSVP_ENDPOINT || RSVP_ENDPOINT.includes("COLE_AQUI")){
-    rsvpStatus.className="error";
-    rsvpStatus.textContent="A confirmação ainda precisa ser conectada à planilha dos noivos.";
-    return;
-  }
-
+  rsvpStatus.textContent="Enviando…";
   rsvpSubmit.disabled=true;
   rsvpSubmit.textContent="Enviando…";
+});
 
-  const data=new URLSearchParams();
-  data.append("nome", rsvpForm.elements.nome.value);
-  data.append("presenca", rsvpForm.elements.presenca.value);
-  data.append("mensagem", rsvpForm.elements.mensagem.value);
-  data.append("origem","site de casamento");
-  data.append("data_evento","14 de novembro de 2026");
-
-  try{
-    await fetch(RSVP_ENDPOINT,{
-      method:"POST",
-      mode:"no-cors",
-      headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
-      body:data.toString()
-    });
-    rsvpForm.reset();
-    rsvpStatus.className="ok";
-    rsvpStatus.textContent="Presença enviada com sucesso. Muito obrigado! ♡";
-  }catch(error){
-    rsvpStatus.className="error";
-    rsvpStatus.textContent="Não foi possível enviar agora. Tente novamente em instantes.";
-  }finally{
-    rsvpSubmit.disabled=false;
-    rsvpSubmit.textContent="Confirmar presença";
-  }
+rsvpFrame.addEventListener("load",()=>{
+  if(!rsvpSending) return;
+  rsvpSending=false;
+  rsvpForm.reset();
+  rsvpStatus.className="ok";
+  rsvpStatus.textContent="Presença enviada com sucesso. Muito obrigado! ♡";
+  rsvpSubmit.disabled=false;
+  rsvpSubmit.textContent="Confirmar presença";
 });
 </script>
 
